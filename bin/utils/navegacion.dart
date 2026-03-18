@@ -101,7 +101,7 @@ abstract class Navegacion {
       if (_opcionInvalida(opcion,5)) {
         stdout.writeln("Opcion no valida");
       }
-    } while (_opcionInvalida(opcion,5));
+    } while (_opcionInvalida(opcion,6));
     switch (opcion) {
       case "1":
         return "buscar";
@@ -116,6 +116,8 @@ abstract class Navegacion {
         return "home";
       case "5":
         return "salir";
+      case "6":
+        return "home";
       default:
         return "principal";
     }
