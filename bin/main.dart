@@ -21,7 +21,7 @@ void main() async {
         menu = Navegacion.home();
         break;
       case "buscar":
-        print("En construcción");
+        menu = await Navegacion.buscar();
         break;
     } 
     if (menu == "salir") {

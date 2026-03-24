@@ -121,6 +121,13 @@ abstract class Navegacion {
     }
   }
 
+  static Future<String> buscar()async{
+    print("Escribe el nombre del Pokemon que quieres buscar");
+    String respuesta = stdin.readLineSync() ?? "Error";
+    await Pokemon.obtenerPokemon(respuesta);
+    return "buscar";
+  }
+
   static bool _opcionInvalida(String opcion, int numero) {
     return (int.tryParse(opcion) ?? 0) > numero || (int.tryParse(opcion) ?? 0) < 1;
   }
