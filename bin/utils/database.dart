@@ -11,9 +11,9 @@ abstract class DataBase {
     var conn = await MySqlConnection.connect(settings);
     await conn.query("CREATE DATABASE IF NOT EXISTS $_dbName");
     await conn.query("USE $_dbName");
-    await crearTablaUsers(conn);
-    await crearTablapokemon(conn);
-    await crearTablausuarioPokemon(conn);
+    await _crearTablaUsers(conn);
+    await _crearTablapokemon(conn);
+    await _crearTablaUsuarioPokemon(conn);
     await conn.close();
   }
 
@@ -28,15 +28,17 @@ abstract class DataBase {
     return conn;
   }
 
-  static Future<void> crearTablaUsers(MySqlConnection conn) async {
+  static Future<void> _crearTablaUsers(MySqlConnection conn) async {
     await conn.query("""CREATE TABLE IF NOT EXISTS users (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(20) NOT NULL, 
     nick VARCHAR(10) NOT NULL, 
-    password VARCHAR(10) NOT NULL)""");
+    password VARCHAR(10) NOT NULL,
+    monedas INT
+    )""");
   }
 
-  static Future<void> crearTablapokemon(MySqlConnection conn) async {
+  static Future<void> _crearTablapokemon(MySqlConnection conn) async {
     await conn.query("""CREATE TABLE IF NOT EXISTS pokemon (
     id_pokemon INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL, 
@@ -48,10 +50,11 @@ abstract class DataBase {
     defensa INT NOT NULL)""");
   }
 
-  static Future<void> crearTablausuarioPokemon(MySqlConnection conn) async {
+  static Future<void> _crearTablaUsuarioPokemon(MySqlConnection conn) async {
     await conn.query("""CREATE TABLE IF NOT EXISTS usuarioPokemon (
     id_usuarioPokemon INT AUTO_INCREMENT PRIMARY KEY,
-    id_pokemon INT
+    iduser INT NOT NULL,
+    idpokemon INT NOT NULL,
     )""");
   }
 

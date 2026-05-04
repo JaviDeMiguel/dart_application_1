@@ -16,13 +16,20 @@ abstract class Sesion{
       await conn.close();
       return false;
     }
+    //como el usuario existe y la contraseña coincide, creo el usuario de la sesión
     await conn.close();
-    usuario = Usuario(
+    usuario = Usuario.fromDatabase(respuesta.first);
+    return true;
+  }
+}
+/*(
       respuesta.first[0],
       respuesta.first[1],
       respuesta.first[2],
       respuesta.first[3],
+      respuesta.first[4],
     );
     return true;
   }
 }
+*/

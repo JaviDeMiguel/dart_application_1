@@ -10,12 +10,15 @@ class Usuario extends ModelClass {
   @override
   String tablename = 'users';
   @override
-  String primarykey = "idusuario";
+  Map? primarykey() => {"id_usuario":id_usuario};
+  @override
+  Map? campos() => {"nombre": nombre, "nick": nick, "password": password, "monedas": monedas};
 
+  Usuario.nulo();
   Usuario(this.id_usuario,this.nombre,this.nick,this.password,this.monedas);
 
   Usuario.fromDatabase(ResultRow row){
-    id_usuario = row['idusuario'] ?? -1;
+    id_usuario = row['id_usuario'] ?? -1;
     nombre = row['nombre'];
     nick = row["nick"] ?? "";
     password = row["password"] ?? "";

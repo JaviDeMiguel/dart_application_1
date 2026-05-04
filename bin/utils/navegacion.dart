@@ -13,10 +13,10 @@ abstract class Navegacion {
           2. Registrarse
           3. Salir""");
       opcion = stdin.readLineSync() ?? "Error";
-      if (_opcionInvalida(opcion,3)) {
+      if (_opcionInvalida(opcion, 3)) {
         stdout.writeln("Opcion no valida");
       }
-    } while (_opcionInvalida(opcion,3));
+    } while (_opcionInvalida(opcion, 3));
     if (opcion == "1") {
       return "login";
     } else if (opcion == "2") {
@@ -54,7 +54,9 @@ abstract class Navegacion {
     datos = {"nombre": nombre, "nick": nick, "password": password};
     bool registrado = await Usuario.registro(datos);
     if (registrado) {
-      print("Te has registrado correctamente");
+      print(
+        "Te has registrado correctamente y hemos ingresado 100 monedas en tu cuenta",
+      );
       return "principal";
     } else {
       print("El usuario ya existe, vuelve a intentarlo");
@@ -80,11 +82,13 @@ abstract class Navegacion {
     } while (nick.isEmpty || password.isEmpty || password.length < 6);
     bool login = await Sesion.login(nick, password);
     if (login) {
-      print("Bienvenido ${Sesion.usuario!.nombre}");
+      print(
+        "Bienvenido ${Sesion.usuario!.nombre}, tienes ${Sesion.usuario!.monedas}",
+      );
       return "home";
     } else {
       print("Bienvenido $nick");
-      return "principal";
+      return "home";
     }
   }
 
@@ -98,10 +102,10 @@ abstract class Navegacion {
           4. Mi equipo
           5. Salir""");
       opcion = stdin.readLineSync() ?? "Error";
-      if (_opcionInvalida(opcion,5)) {
+      if (_opcionInvalida(opcion, 5)) {
         stdout.writeln("Opcion no valida");
       }
-    } while (_opcionInvalida(opcion,5));
+    } while (_opcionInvalida(opcion, 5));
     switch (opcion) {
       case "1":
         return "buscar";
@@ -121,15 +125,83 @@ abstract class Navegacion {
     }
   }
 
-  static Future<String> buscar()async{
+  static Future<String> buscar() async {
+    //Pedimos al usuario el nombre o ID del pokemon que quiere
     print("Escribe el nombre del Pokemon que quieres buscar");
     String respuesta = stdin.readLineSync() ?? "Error";
-    await Pokemon.obtenerPokemon(respuesta);
-    return "buscar";
+    Pokemon? pokemon = await Pokemon.obtenerPokemon(respuesta);
+    if (pokemon == null) {
+      print("Error: algo ha ido mal al obtener el pokemon");
+      return "buscar";
+    }
+    //Imprimimos la info del pokemon
+    print("""¡¡Has encontrado un pokemon!!
+    Nombre: ${pokemon.nombre}
+    Tipo principal: ${pokemon.tipo1}
+    Tipo secundario: ${pokemon.tipo2 ?? "------"}
+    Vida: ${pokemon.hp}
+    Velocidad: ${pokemon.velocidad}
+    Ataque: ${pokemon.ataque}
+    Defensa: ${pokemon.defensa}
+    Ataque especial: ${pokemon.ataqueesp}
+    Defensa especial: ${pokemon.defensaesp}
+    """);
+    //obtenemos su valor
+    int valorPokemon = pokemon.valorarPokemon();
+    print("El valor de este pokemon es $valorPokemon");
+    //EL usuario decide si quiere comprarlo
+    String opcion;
+    do {
+      print("""¿Quiéres comprarlo?
+    1.- Sí.
+    2.- Meh.""");
+      opcion = stdin.readLineSync() ?? "Error";
+      if (_opcionInvalida(opcion, 2)) {
+        stdout.writeln("Opcion no valida");
+      }
+    } while (_opcionInvalida(opcion, 2));
+    if (opcion == "1") {
+      //SI decide comprarlo hace una oferta
+      int? oferta = _getOferta();
+
+      if (valorPokemon <= oferta) {
+        //si la oferta es suficiente, se compra
+        bool comprado = true;
+        if (comprado) {
+          Sesion.usuario!.restarMonedas(oferta);
+        }
+      } else {
+        //si la oferta no ha sido suficiente, se le penaliza
+        print("Lo siento, tu oferta no ha sido suficiente");
+        Sesion.usuario!.restarMonedas((oferta * 0.2).toInt());
+      }
+      //Sesion.usuario!.save();
+      return "buscar";
+    } else {
+      //Si decide no comprarlo, puede buscar otro
+      print("Sin problema, puedes buscar otro pokemon.");
+      return "buscar";
+    }
   }
 
   static bool _opcionInvalida(String opcion, int numero) {
-    return (int.tryParse(opcion) ?? 0) > numero || (int.tryParse(opcion) ?? 0) < 1;
+    return (int.tryParse(opcion) ?? 0) > numero ||
+        (int.tryParse(opcion) ?? 0) < 1;
+  }
+
+  static int _getOferta() {
+    int? oferta;
+    do {
+      print("¡Estupendo! ¿Cuánto estás dispuesto a pagar por él?");
+      String respuesta = stdin.readLineSync() ?? "Error";
+      oferta = int.tryParse(respuesta);
+      if (oferta == null) {
+        print("Debes introducir un número entero");
+      } else if (oferta > Sesion.usuario!.monedas) {
+        print("No tienes tantas monedas");
+      }
+    } while (oferta == null || oferta > Sesion.usuario!.monedas);
+    return oferta;
   }
 }
 

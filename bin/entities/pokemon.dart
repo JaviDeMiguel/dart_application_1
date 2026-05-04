@@ -19,7 +19,9 @@ class Pokemon extends ModelClass {
   @override
   String tablename = "pokemon";
   @override
-  String primarykey = "idpokemon";
+  Map? primarykey() => {"idpokemon":idpokemon};
+  @override
+  Map? campos() => {"idpokemon": idpokemon, "nombre": nombre, "tipo1": tipo1, "tipo2": tipo2, "ataque": ataque, "defensa": defensa, "hp": hp, "velocidad": velocidad, "ataqueesp": ataqueesp, "defensaesp": defensaesp};
 
   Pokemon({
     required this.idpokemon,
@@ -83,4 +85,8 @@ class Pokemon extends ModelClass {
     int valor = Random().nextInt(redondeado * 2);
     return valor;
   }
+
+  //bool comprar(){
+    
+  //}
 }
